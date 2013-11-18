@@ -333,7 +333,6 @@ run(LV2_Handle instance,
 		self->frame_offset = ev->time.frames;
 		if (ev->body.type == uris->midi_Event) {
 			const uint8_t* const msg = (const uint8_t*)(ev + 1);
-            fprintf(stderr, "got midi: %X\r\n", lv2_midi_message_type(msg));
 			switch (lv2_midi_message_type(msg)) {
 			case LV2_MIDI_MSG_NOTE_ON:
 				start_frame = ev->time.frames;

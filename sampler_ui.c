@@ -59,22 +59,66 @@ on_trig_clicked(GtkWidget* widget,
                 void*      handle)
 {
     fprintf(stderr, "Triggered... pew pew pew!\r\n");
-    //LV2_Atom_Forge_Frame frame;
-    //LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_blank(&forge, &frame, 1, ui->
-    // URI_MAP_ID_ATOM_TRANSFER_ATOM -> mapped LV2_ATOM__atomTransfer
-    // URI_MAP_ID_MIDI_EVENT         -> mapped LV2_MIDI__MidiEvent
-
 	SamplerUI* ui = (SamplerUI*)handle;
 
-    LV2_Atom_MidiEvent midiEv;
-    midiEv.event.time.frames = 0;
-    midiEv.event.body.type = ui->uris.midi_Event;
-    midiEv.event.body.size = 3;
-    midiEv.data[0] = 0x90;
-    midiEv.data[1] = 127;
-    midiEv.data[2] = 127;
+    /* the data that we want to send */
+    uint8_t raw_midi[3];
+    raw_midi[0] = 0x90;
+    raw_midi[1] = 127;
+    raw_midi[2] = 127;
+ 
+    /* and the length of the data */
+    size_t  midi_message_length = 3;
+ 
+    /* timestamp when this midi-message will be send
+     * in samples from the beginning of this cycle
+     */
+    int32_t sampletime = 0;
+ 
+    /* Message payload header */
+    LV2_Atom midiatom;
+    midiatom.type = ui->uris.midi_Event;
+    midiatom.size = midi_message_length;
+ 
+    /* buffer used to forge the message in */
+    uint8_t atom_buf[64];
+ 
+    /* make forge use this buffer for now */
+    lv2_atom_forge_set_buffer(&ui->forge, atom_buf, sizeof(atom_buf));
+ 
+    /* format a proper Atom message */
+    LV2_Atom_Forge_Frame frame;
+    /* All events needs to have a timestamp first: */
+    
+    lv2_atom_forge_frame_time(&ui->forge, sampletime);
+    /* .. then we need to specify what this message is about and how long the
+     * payload is: add the header */
+    lv2_atom_forge_raw(&ui->forge, &midiatom, sizeof(LV2_Atom));
+    /* now we we can add the actual data */
+    lv2_atom_forge_raw(&ui->forge, raw_midi, midi_message_length);
+    /* finally pad the message to make it 32bit aligned */
+    lv2_atom_forge_pad(&ui->forge, sizeof(LV2_Atom) + midi_message_length);
+    /* and have the forge close off atom-object */
+    lv2_atom_forge_pop(&ui->forge, &frame);
+ 
+    /* send it */
+    ui->write(ui->controller, 0, lv2_atom_total_size(&frame), ui->uris.atom_eventTransfer, &frame);
 
-    ui->write(ui->controller, 0, 3, ui->uris.atom_eventTransfer, &midiEv);
+    ////LV2_Atom_Forge_Frame frame;
+    ////LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_blank(&forge, &frame, 1, ui->
+    //// URI_MAP_ID_ATOM_TRANSFER_ATOM -> mapped LV2_ATOM__atomTransfer
+    //// URI_MAP_ID_MIDI_EVENT         -> mapped LV2_MIDI__MidiEvent
+
+
+    //LV2_Atom_MidiEvent midiEv;
+    //midiEv.event.time.frames = 0;
+    //midiEv.event.body.type = ui->uris.midi_Event;
+    //midiEv.event.body.size = 3;
+    //midiEv.data[0] = 0x90;
+    //midiEv.data[1] = 127;
+    //midiEv.data[2] = 127;
+
+    //ui->write(ui->controller, 0, sizeof(LV2_Atom_MidiEvent), ui->uris.atom_eventTransfer, &midiEv);
 }
 static void
 on_load_clicked(GtkWidget* widget,

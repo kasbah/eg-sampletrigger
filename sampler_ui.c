@@ -49,6 +49,11 @@ typedef struct {
 	GtkWidget* label;
 } SamplerUI;
 
+typedef struct LV2_Atom_MidiEvent {
+    LV2_Atom_Event event;
+    uint8_t data[3];
+} LV2_Atom_MidiEvent;
+
 static void
 on_trig_clicked(GtkWidget* widget,
                 void*      handle)
@@ -56,6 +61,20 @@ on_trig_clicked(GtkWidget* widget,
     fprintf(stderr, "Triggered... pew pew pew!\r\n");
     //LV2_Atom_Forge_Frame frame;
     //LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_blank(&forge, &frame, 1, ui->
+    // URI_MAP_ID_ATOM_TRANSFER_ATOM -> mapped LV2_ATOM__atomTransfer
+    // URI_MAP_ID_MIDI_EVENT         -> mapped LV2_MIDI__MidiEvent
+
+	SamplerUI* ui = (SamplerUI*)handle;
+
+    LV2_Atom_MidiEvent midiEv;
+    midiEv.event.time.frames = 0;
+    midiEv.event.body.type = ui->uris.midi_Event;
+    midiEv.event.body.size = 3;
+    midiEv.data[0] = 0x90;
+    midiEv.data[1] = 127;
+    midiEv.data[2] = 127;
+
+    ui->write(ui->controller, 0, 3, ui->uris.atom_eventTransfer, &midiEv);
 }
 static void
 on_load_clicked(GtkWidget* widget,

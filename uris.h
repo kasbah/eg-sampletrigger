@@ -33,6 +33,7 @@ typedef struct {
 	LV2_URID atom_Resource;
 	LV2_URID atom_Sequence;
 	LV2_URID atom_URID;
+	LV2_URID atom_atomTransfer;
 	LV2_URID atom_eventTransfer;
 	LV2_URID eg_applySample;
 	LV2_URID eg_sample;
@@ -51,6 +52,7 @@ map_sampler_uris(LV2_URID_Map* map, SamplerURIs* uris)
 	uris->atom_Resource      = map->map(map->handle, LV2_ATOM__Resource);
 	uris->atom_Sequence      = map->map(map->handle, LV2_ATOM__Sequence);
 	uris->atom_URID          = map->map(map->handle, LV2_ATOM__URID);
+	uris->atom_atomTransfer  = map->map(map->handle, LV2_ATOM__atomTransfer);
 	uris->atom_eventTransfer = map->map(map->handle, LV2_ATOM__eventTransfer);
 	uris->eg_applySample     = map->map(map->handle, EG_SAMPLER__applySample);
 	uris->eg_freeSample      = map->map(map->handle, EG_SAMPLER__freeSample);

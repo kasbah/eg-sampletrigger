@@ -8,12 +8,12 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix ui:   <http://lv2plug.in/ns/extensions/ui#> .
 
-<http://lv2plug.in/plugins/eg-sampler>
+<http://github.com/kasbah/eg-sampletrigger>
 	a lv2:Plugin ;
 	lv2:binary <sampler@LIB_EXT@> ;
 	rdfs:seeAlso <sampler.ttl> .
 
-<http://lv2plug.in/plugins/eg-sampler#ui>
+<http://github.com/kasbah/eg-sampletrigger#ui>
 	a ui:GtkUI ;
 	ui:binary <sampler_ui@LIB_EXT@> ;
 	rdfs:seeAlso <sampler.ttl> .

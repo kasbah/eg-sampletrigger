@@ -32,7 +32,7 @@
 
 #include "./uris.h"
 
-#define SAMPLER_UI_URI "http://lv2plug.in/plugins/eg-sampler#ui"
+#define SAMPLER_UI_URI "http://github.com/kasbah/eg-sampletrigger#ui"
 
 typedef struct {
 	LV2_Atom_Forge forge;
@@ -45,9 +45,18 @@ typedef struct {
 
 	GtkWidget* box;
 	GtkWidget* button;
+	GtkWidget* button2;
 	GtkWidget* label;
 } SamplerUI;
 
+static void
+on_trig_clicked(GtkWidget* widget,
+                void*      handle)
+{
+    fprintf(stderr, "Triggered... pew pew pew!\r\n");
+    //LV2_Atom_Forge_Frame frame;
+    //LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_blank(&forge, &frame, 1, ui->
+}
 static void
 on_load_clicked(GtkWidget* widget,
                 void*      handle)
@@ -103,7 +112,8 @@ instantiate(const LV2UI_Descriptor*   descriptor,
 	ui->write      = write_function;
 	ui->controller = controller;
 	ui->box        = NULL;
-	ui->button     = NULL;
+    ui->button     = NULL;
+	ui->button2    = NULL;
 	ui->label      = NULL;
 
 	*widget = NULL;
@@ -131,6 +141,12 @@ instantiate(const LV2UI_Descriptor*   descriptor,
 	gtk_box_pack_start(GTK_BOX(ui->box), ui->button, FALSE, FALSE, 4);
 	g_signal_connect(ui->button, "clicked",
 	                 G_CALLBACK(on_load_clicked),
+	                 ui);
+	ui->button2 = gtk_button_new_with_label("Trigger");
+	gtk_box_pack_start(GTK_BOX(ui->box), ui->label, TRUE, TRUE, 4);
+	gtk_box_pack_start(GTK_BOX(ui->box), ui->button2, FALSE, FALSE, 4);
+	g_signal_connect(ui->button2, "clicked",
+	                 G_CALLBACK(on_trig_clicked),
 	                 ui);
 
 	*widget = ui->box;

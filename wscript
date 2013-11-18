@@ -3,7 +3,7 @@ from waflib.extras import autowaf as autowaf
 import re
 
 # Variables for 'waf dist'
-APPNAME = 'eg-sampler.lv2'
+APPNAME = 'eg-sampletrigger.lv2'
 VERSION = '1.0.0'
 
 # Mandatory variables
@@ -32,7 +32,7 @@ def configure(conf):
     print('')
 
 def build(bld):
-    bundle = 'eg-sampler.lv2'
+    bundle = 'eg-sampletrigger.lv2'
 
     # Make a pattern for shared objects without the 'lib' prefix
     module_pat = re.sub('^lib', '', bld.env.cshlib_PATTERN)
